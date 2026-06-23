@@ -3,25 +3,25 @@ pipeline {
 
     stages {
 
-        stage('Deploy Dev') {
-            when {
-                branch 'dev'
-            }
+        stage('Checkout') {
             steps {
-                bat '''
-                xcopy /E /I /Y dev\\* C:\\Deploy\\Dev\\
-                '''
+                git branch: params.BRANCH,
+                    url: 'https://github.com/namrtavirdi/jenkins.git'
             }
         }
 
-        stage('Deploy Main') {
-            when {
-                branch 'main'
-            }
+        stage('Deploy') {
             steps {
-                bat '''
-                xcopy /E /I /Y main\\* C:\\Deploy\\Main\\
-                '''
+                script {
+
+                    if (params.BRANCH == 'main') {
+                        bat 'xcopy /E /I /Y main\\* C:\\Deploy\\Main\\'
+                    }
+
+                    if (params.BRANCH == 'dev') {
+                        bat 'xcopy /E /I /Y dev\\* C:\\Deploy\\Dev\\'
+                    }
+                }
             }
         }
     }
