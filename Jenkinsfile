@@ -1,34 +1,30 @@
 pipeline {
     agent any
 
-    parameters {
-        choice(
-            name: 'BRANCH',
-            choices: ['main', 'dev'],
-            description: 'Select branch'
-        )
-    }
-
     stages {
 
         stage('Checkout') {
             steps {
-                git branch: params.BRANCH,
-                    url: 'https://github.com/namrtavirdi/jenkins.git'
+                checkout scm
             }
         }
 
         stage('Display Content') {
             steps {
                 script {
-                    if (params.BRANCH == 'main') {
+
+                    def branch = env.GIT_BRANCH
+
+                    echo "Current Branch: ${branch}"
+
+                    if (branch.contains("main")) {
                         bat '''
                         echo ===== MAIN BRANCH =====
                         type main\\index.txt
                         '''
                     }
 
-                    if (params.BRANCH == 'dev') {
+                    if (branch.contains("dev")) {
                         bat '''
                         echo ===== DEV BRANCH =====
                         type dev\\index.txt
