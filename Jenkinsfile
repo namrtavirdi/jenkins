@@ -1,6 +1,14 @@
 pipeline {
     agent any
 
+    parameters {
+        choice(
+            name: 'BRANCH',
+            choices: ['main', 'dev'],
+            description: 'Select branch'
+        )
+    }
+
     stages {
 
         stage('Checkout') {
@@ -10,18 +18,21 @@ pipeline {
             }
         }
 
-        stage('Deploy') {
+        stage('Display Content') {
             steps {
-                script {
+                sh '''
+                echo "Current Branch: ${BRANCH}"
 
-                    if (params.BRANCH == 'main') {
-                        bat 'xcopy /E /I /Y main\\* C:\\Deploy\\Main\\'
-                    }
+                if [ "$BRANCH" = "main" ]; then
+                    echo "===== Main Branch Content ====="
+                    cat main/index.txt
+                fi
 
-                    if (params.BRANCH == 'dev') {
-                        bat 'xcopy /E /I /Y dev\\* C:\\Deploy\\Dev\\'
-                    }
-                }
+                if [ "$BRANCH" = "dev" ]; then
+                    echo "===== Dev Branch Content ====="
+                    cat dev/index.txt
+                fi
+                '''
             }
         }
     }
