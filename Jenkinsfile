@@ -20,19 +20,21 @@ pipeline {
 
         stage('Display Content') {
             steps {
-                sh '''
-                echo "Current Branch: ${BRANCH}"
+                script {
+                    if (params.BRANCH == 'main') {
+                        bat '''
+                        echo ===== MAIN BRANCH =====
+                        type main\\index.txt
+                        '''
+                    }
 
-                if [ "$BRANCH" = "main" ]; then
-                    echo "===== Main Branch Content ====="
-                    cat main/index.txt
-                fi
-
-                if [ "$BRANCH" = "dev" ]; then
-                    echo "===== Dev Branch Content ====="
-                    cat dev/index.txt
-                fi
-                '''
+                    if (params.BRANCH == 'dev') {
+                        bat '''
+                        echo ===== DEV BRANCH =====
+                        type dev\\index.txt
+                        '''
+                    }
+                }
             }
         }
     }
