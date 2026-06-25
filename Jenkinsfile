@@ -2,7 +2,6 @@ pipeline {
     agent any
 
     stages {
-
         stage('Checkout') {
             steps {
                 checkout scm
@@ -12,23 +11,16 @@ pipeline {
         stage('Display Content') {
             steps {
                 script {
+                    echo "Current Branch: ${env.BRANCH_NAME}"
 
-                    def branch = env.GIT_BRANCH
-
-                    echo "Current Branch: ${branch}"
-
-                    if (branch.contains("main")) {
-                        bat '''
-                        echo ===== MAIN BRANCH =====
-                        type main\\index.txt
-                        '''
+                    if (env.BRANCH_NAME == 'main') {
+                        bat 'type main\\index.txt'
                     }
-
-                    if (branch.contains("dev")) {
-                        bat '''
-                        echo ===== DEV BRANCH =====
-                        type dev\\index.txt
-                        '''
+                    else if (env.BRANCH_NAME == 'dev') {
+                        bat 'type dev\\index.txt'
+                    }
+                    else if (env.BRANCH_NAME == 'test') {
+                        bat 'type test\\index.txt'
                     }
                 }
             }
