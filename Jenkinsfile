@@ -1,29 +1,52 @@
 pipeline {
-    agent any
+agent any
 
-    stages {
-        stage('Checkout') {
-            steps {
-                checkout scm
-            }
+```
+parameters {
+    choice(
+        name: 'BRANCH',
+        choices: ['main', 'dev', 'test'],
+        description: 'Select branch to deploy'
+    )
+}
+
+stages {
+
+    stage('Checkout') {
+        steps {
+            git branch: params.BRANCH,
+                credentialsId: 'GitHub Deploy',
+                url: 'https://github.com/namrtavirdi/jenkins.git'
         }
+    }
 
-        stage('Display Content') {
-            steps {
-                script {
-                    echo "Current Branch: ${env.BRANCH_NAME}"
+    stage('Display Content') {
+        steps {
+            script {
+                echo "Current Branch: ${params.BRANCH}"
 
-                    if (env.BRANCH_NAME == 'main') {
-                        bat 'type main\\index.txt'
-                    }
-                    else if (env.BRANCH_NAME == 'dev') {
-                        bat 'type dev\\index.txt'
-                    }
-                    else if (env.BRANCH_NAME == 'test') {
-                        bat 'type test\\index.txt'
-                    }
+                if (params.BRANCH == 'main') {
+                    bat '''
+                    echo ===== MAIN BRANCH =====
+                    type main\\index.txt
+                    '''
+                }
+                else if (params.BRANCH == 'dev') {
+                    bat '''
+                    echo ===== DEV BRANCH =====
+                    type dev\\index.txt
+                    '''
+                }
+                else if (params.BRANCH == 'test') {
+                    bat '''
+                    echo ===== TEST BRANCH =====
+                    type test\\index.txt
+                    '''
                 }
             }
         }
     }
+}
+```
+
 }
