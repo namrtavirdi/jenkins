@@ -1,7 +1,6 @@
 pipeline {
 agent any
 
-```
 stages {
 
     stage('Display Branch Content') {
@@ -37,6 +36,6 @@ stages {
         }
     }
 }
-```
+
 
 }
