@@ -1,49 +1,42 @@
 pipeline {
-    agent any
+agent any
 
-    parameters {
-        choice(
-            name: 'BRANCH',
-            choices: ['main', 'dev', 'test'],
-            description: 'Select branch to deploy'
-        )
-    }
+```
+stages {
 
-    stages {
+    stage('Display Branch Content') {
+        steps {
+            script {
 
-        stage('Checkout') {
-            steps {
-                git branch: params.BRANCH,
-                    credentialsId: 'GitHub Deploy',
-                    url: 'https://github.com/namrtavirdi/jenkins.git'
-            }
-        }
+                def branch = env.GIT_BRANCH ?: ''
 
-        stage('Display Content') {
-            steps {
-                script {
-                    echo "Current Branch: ${params.BRANCH}"
+                echo "Current Branch: ${branch}"
 
-                    if (params.BRANCH == 'main') {
-                        bat '''
-                        echo ===== MAIN BRANCH =====
-                        type main\\index.txt
-                        '''
-                    }
-                    else if (params.BRANCH == 'dev') {
-                        bat '''
-                        echo ===== DEV BRANCH =====
-                        type dev\\index.txt
-                        '''
-                    }
-                    else if (params.BRANCH == 'test') {
-                        bat '''
-                        echo ===== TEST BRANCH =====
-                        type test\\index.txt
-                        '''
-                    }
+                if (branch.contains('main')) {
+                    bat '''
+                    echo ===== MAIN BRANCH =====
+                    type main\\index.txt
+                    '''
+                }
+                else if (branch.contains('dev')) {
+                    bat '''
+                    echo ===== DEV BRANCH =====
+                    type dev\\index.txt
+                    '''
+                }
+                else if (branch.contains('test')) {
+                    bat '''
+                    echo ===== TEST BRANCH =====
+                    type test\\index.txt
+                    '''
+                }
+                else {
+                    echo "Branch not configured. Skipping..."
                 }
             }
         }
     }
+}
+```
+
 }
